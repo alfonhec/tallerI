@@ -1,4 +1,4 @@
-# talle-1
+# Taller I
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
