@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package py.edu.ucom.entities;
 
 import java.io.Serializable;
@@ -23,10 +20,7 @@ import jakarta.persistence.Table;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author Jhony
- */
+
 @Entity
 @Table(name = "producto")
 @XmlRootElement
