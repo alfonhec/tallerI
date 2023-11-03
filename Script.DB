@@ -1,0 +1,168 @@
+CREATE SEQUENCE public.metodo_pago_metodo_pago_id_seq_1;
+
+CREATE TABLE public.metodo_pago (
+                metodo_pago_id INTEGER NOT NULL DEFAULT nextval('public.metodo_pago_metodo_pago_id_seq_1'),
+                codigo VARCHAR NOT NULL,
+                descripcion VARCHAR NOT NULL,
+                CONSTRAINT metodo_pago_pk PRIMARY KEY (metodo_pago_id)
+);
+
+
+ALTER SEQUENCE public.metodo_pago_metodo_pago_id_seq_1 OWNED BY public.metodo_pago.metodo_pago_id;
+
+CREATE SEQUENCE public.producto_producto_id_seq;
+
+CREATE TABLE public.producto (
+                producto_id INTEGER NOT NULL DEFAULT nextval('public.producto_producto_id_seq'),
+                codigo VARCHAR NOT NULL,
+                stock INTEGER NOT NULL,
+                descripcion VARCHAR NOT NULL,
+                precio_unitario INTEGER NOT NULL,
+                CONSTRAINT producto_pk PRIMARY KEY (producto_id)
+);
+
+
+ALTER SEQUENCE public.producto_producto_id_seq OWNED BY public.producto.producto_id;
+
+CREATE SEQUENCE public.tipo_documento_id_seq;
+
+CREATE TABLE public.tipo_documento (
+                tipo_documento_id INTEGER NOT NULL DEFAULT nextval('public.tipo_documento_id_seq'),
+                codigo VARCHAR NOT NULL,
+                descripcion VARCHAR NOT NULL,
+                CONSTRAINT tipo_documento_pk PRIMARY KEY (tipo_documento_id)
+);
+
+
+ALTER SEQUENCE public.tipo_documento_id_seq OWNED BY public.tipo_documento.tipo_documento_id;
+
+CREATE SEQUENCE public.cliente_id_seq;
+
+CREATE TABLE public.cliente (
+                cliente_id INTEGER NOT NULL DEFAULT nextval('public.cliente_id_seq'),
+                nombres VARCHAR NOT NULL,
+                apellidos VARCHAR NOT NULL,
+                documento VARCHAR NOT NULL,
+                es_cliente_fiel BOOLEAN,
+                tipo_documento_id INTEGER NOT NULL,
+                CONSTRAINT cliente_pk PRIMARY KEY (cliente_id)
+);
+
+
+ALTER SEQUENCE public.cliente_id_seq OWNED BY public.cliente.cliente_id;
+
+CREATE SEQUENCE public.venta_venta_id_seq;
+
+CREATE TABLE public.venta (
+                venta_id INTEGER NOT NULL DEFAULT nextval('public.venta_venta_id_seq'),
+                total INTEGER NOT NULL,
+                cliente_id INTEGER NOT NULL,
+                fecha TIMESTAMP NOT NULL,
+                metodo_pago_id INTEGER NOT NULL,
+                CONSTRAINT venta_pk PRIMARY KEY (venta_id)
+);
+
+
+ALTER SEQUENCE public.venta_venta_id_seq OWNED BY public.venta.venta_id;
+
+CREATE SEQUENCE public.venta_detalle_venta_detalle_id_seq;
+
+CREATE TABLE public.venta_detalle (
+                venta_detalle_id INTEGER NOT NULL DEFAULT nextval('public.venta_detalle_venta_detalle_id_seq'),
+                venta_id INTEGER NOT NULL,
+                producto_id INTEGER NOT NULL,
+                cantidad INTEGER NOT NULL,
+                subtotal INTEGER NOT NULL,
+                CONSTRAINT venta_detalle_pk PRIMARY KEY (venta_detalle_id)
+);
+
+
+ALTER SEQUENCE public.venta_detalle_venta_detalle_id_seq OWNED BY public.venta_detalle.venta_detalle_id;
+
+ALTER TABLE public.venta ADD CONSTRAINT metodo_pago_venta_fk
+FOREIGN KEY (metodo_pago_id)
+REFERENCES public.metodo_pago (metodo_pago_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.venta_detalle ADD CONSTRAINT producto_venta_detalle_fk
+FOREIGN KEY (producto_id)
+REFERENCES public.producto (producto_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.cliente ADD CONSTRAINT tipo_documento_cliente_fk
+FOREIGN KEY (tipo_documento_id)
+REFERENCES public.tipo_documento (tipo_documento_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.venta ADD CONSTRAINT cliente_venta_fk
+FOREIGN KEY (cliente_id)
+REFERENCES public.cliente (cliente_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.venta_detalle ADD CONSTRAINT venta_venta_detalle_fk
+FOREIGN KEY (venta_id)
+REFERENCES public.venta (venta_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+
+
+--- INSERT EN BASE DE DATOS
+
+-- Insertar datos en la tabla metodo_pago
+INSERT INTO public.metodo_pago (codigo, descripcion) VALUES 
+('COD1', 'Tarjeta de crédito'),
+('COD2', 'Tarjeta de débito'),
+('COD3', 'Efectivo'),
+('COD4', 'Transferencia bancaria'),
+('COD5', 'PayPal');
+
+-- Insertar datos en la tabla producto
+INSERT INTO public.producto (codigo, stock, descripcion, precio_unitario) VALUES
+('PROD1', 100, 'Laptop', 1000),
+('PROD2', 50, 'Teléfono móvil', 500),
+('PROD3', 200, 'Auriculares', 50),
+('PROD4', 150, 'Mouse', 20),
+('PROD5', 250, 'Teclado', 30);
+
+-- Insertar datos en la tabla tipo_documento
+INSERT INTO public.tipo_documento (codigo, descripcion) VALUES
+('DOC1', 'DNI'),
+('DOC2', 'Pasaporte'),
+('DOC3', 'Carnet de Extranjería'),
+('DOC4', 'RUC'),
+('DOC5', 'Otros');
+
+-- Insertar datos en la tabla cliente
+INSERT INTO public.cliente (nombres, apellidos, documento, es_cliente_fiel, tipo_documento_id) VALUES
+('Juan', 'Pérez', '12345678', true, 1),
+('María', 'Gonzalez', '87654321', false, 1),
+('Luis', 'Rodriguez', 'A123456', false, 2),
+('Ana', 'Torres', 'B123456', true, 2),
+('Pedro', 'Gutierrez', '00123456', false, 3);
+
+-- Insertar datos en la tabla venta
+INSERT INTO public.venta (total, cliente_id, fecha, metodo_pago_id) VALUES
+(1050, 1, '2023-10-18 10:00:00', 1),
+(530, 2, '2023-10-18 11:00:00', 2),
+(70, 3, '2023-10-18 12:00:00', 3),
+(50, 4, '2023-10-18 13:00:00', 4),
+(60, 5, '2023-10-18 14:00:00', 5);
+
+-- Insertar datos en la tabla venta_detalle
+-- (Para simplificar, cada venta tendrá solo un producto, aunque en la realidad podrían tener varios)
+INSERT INTO public.venta_detalle (venta_id, producto_id, cantidad, subtotal) VALUES
+(1, 1, 1, 1000),
+(2, 2, 1, 500),
+(3, 3, 1, 50),
+(4, 4, 1, 20),
+(5, 5, 2, 60);
